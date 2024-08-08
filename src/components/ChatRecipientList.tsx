@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "./ui/separator";
 import { useEffect } from "react";
 import { fetchMessages } from "@/api/fetchAPI";
-import Spinner from "./ui/spinner";
+import { Spinner } from "./ui/spinner";
 import Image from "next/image";
 
 export function ChatRecipientList({

@@ -4,7 +4,7 @@ import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import ChatBox from "./ChatBox";
 import { Button } from "./ui/button";
-import Spinner from "./ui/spinner";
+import { Spinner } from "./ui/spinner";
 import {
   Card,
   CardHeader,
