@@ -2,29 +2,31 @@ import { useEffect, useState, useRef } from "react";
 import Chat from "./Chat";
 
 export default function ChatBox({ 
+  profileImage,
   messages, 
   recipient 
 } : { 
+  profileImage: string,
   messages: any[],
   recipient: string
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [messageItems, setMessageItems] = useState<any[]>([]);
+
   useEffect(() => {
-    const items = messages.reverse();
+    const items = messages;
     console.log(items);
     // time conversion to hours, days, weeks
     items.forEach((message) => {
-      const lastMessageTime = new Date(message.createdTime).getTime();
-      const formattedTime = new Date(lastMessageTime).
-                toLocaleTimeString('en-US', 
-                  { 
-                    hour: 'numeric', minute: 'numeric', hour12: true 
-                  });
-      message.createdTime = formattedTime;
+      const lastMessageTime = new Date(message.createdTime).toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      message.createdTime = lastMessageTime;
     });
     
     setMessageItems(items);
+
   }, [messages]);
 
   useEffect(() => {
@@ -43,6 +45,7 @@ export default function ChatBox({
               isSender={message.sender.id !== recipient}
               time={message.createdTime}
               sender={message.sender.name[0]}
+              profileImage={profileImage}
             >
               {message.message}
             </Chat>

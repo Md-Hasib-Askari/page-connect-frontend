@@ -4,6 +4,7 @@ import { Separator } from "./ui/separator";
 import { Input } from "./ui/input";
 import ChatBox from "./ChatBox";
 import { Button } from "./ui/button";
+import Spinner from "./ui/spinner";
 import {
   Card,
   CardHeader,
@@ -14,29 +15,24 @@ import {
 import { socket } from "@/lib/socket";
 import { fetchMessages } from "@/api/fetchAPI";
 
-export const ChatArea = ({ recipient }: { recipient: string }) => {
-  const [message, setMessage] = useState<string>("");
+export const ChatArea = ({ 
+  recipient, newMessage
+ }: { 
+  recipient: string, 
+  newMessage: boolean
+}) => {
+  const [message, setMessage] = useState<string>(""); // message to be sent
   const [conversation, setConversation] = useState({
-    user: {
+    recipient: {
       id: "",
       name: "",
-      profile_image: {
-        url: "",
-        width: 0,
-        height: 0,
-      },
+      profileImage: "",
     },
     messages: [],
   });
-  const [user, setUser] = useState({
-    id: "",
-    name: "",
-    profile_image: {
-      url: "",
-      width: 0,
-      height: 0,
-    },
-  });
+  const [profileImage, setProfileImage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [loadMessages, setLoadMessages] = useState(false);
 
   useEffect(() => {
     // jwt token
@@ -47,52 +43,71 @@ export const ChatArea = ({ recipient }: { recipient: string }) => {
       const response = await fetchMessages(jwtToken);
       if (response.status === "success") {
         const items = response.data.filter((message: any) => {
-          if (message.user.id !== recipient) return;
+          if (message.recipient.id !== recipient) return;
           return message;
         });
         console.log(items[0]);
-        
+
         setConversation(items[0]);
-        setUser(items[0].user);
+        setProfileImage(items[0].recipient.profileImage);
+
+        setLoading(false);
       }
     })();
+  }, [recipient, newMessage, loadMessages]);
+
+  useEffect(() => {
+    setLoading(true);
   }, [recipient]);
 
   useEffect(() => {
-    console.log("Conversation updated: ", user);
+    console.log('newMessage ', conversation);
+    
   }, [conversation]);
 
   const sendMessage = () => {
+    
     socket.emit("private_message", {
       token: Cookies.get("token"),
       message: message,
       recipient: recipient,
     });
     setMessage("");
+    setLoadMessages(!loadMessages);
   };
 
   return (
     <Card className="h-full flex flex-col justify-between">
-      <CardHeader>
-        <CardTitle>
-          {/* {
-            user && (
+      <CardHeader className="pb-0">
+        <CardTitle className="flex gap-3 align-middle">
+          {!loading && (
+            <>
               <img
-                className="rounded-full w-fit"
-                src={user.profile_image.url}
-                alt={user.name}
-                height={user.profile_image.height}
-                width={user.profile_image.width}
+                src={profileImage}
+                alt={conversation.recipient.name}
+                className="size-8 rounded-full mr-2"
               />
-            )
-          } */}
-          {conversation.user.name}
+              <span className="content-center">{conversation.recipient.name}</span>
+            </>
+          )}
         </CardTitle>
         <Separator />
       </CardHeader>
-      <CardContent className="h-full">
-        <ChatBox messages={conversation.messages} recipient={recipient} />
-      </CardContent>
+      {loading ? (
+        <CardContent>
+          <div className="relative flex justify-center place-items-center">
+            <Spinner loading />
+          </div>
+        </CardContent>
+      ) : (
+        <CardContent className='h-full pt-2'>
+          <ChatBox
+            profileImage={profileImage}
+            messages={conversation.messages}
+            recipient={recipient}
+          />
+        </CardContent>
+      )}
       <CardFooter className="py-1 w-full flex flex-row justify-center">
         <div className="max-w-xl flex flex-row">
           <Input

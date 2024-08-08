@@ -25,7 +25,13 @@ const FacebookConnectButton = ({ className = '' }: {className: string}): ReactEl
 
   return (
   <>
-    <Button className={`bg-purple-600 ${className}`} onClick={handleConnect}><FaFacebook size={20} className="mr-3" />Connect with Facebook</Button>
+    <Button 
+      className={`relative bg-purple-600 ${className}`} 
+      onClick={handleConnect}>
+        
+        <FaFacebook size={20} className="mr-3" />
+        Connect with Facebook
+    </Button>
   </>
   );
 };

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "./ui/separator";
 import { useEffect } from "react";
 import { fetchMessages } from "@/api/fetchAPI";
+import Spinner from "./ui/spinner";
 
 export function ChatRecipientList({
   pageConnected,
@@ -19,7 +20,8 @@ export function ChatRecipientList({
   callback: (arg: boolean) => void;
   setRecipient: (arg: string) => void;
 }) {
-  const [messageItems, setMessageItems] = React.useState([]);
+  const [messageItems, setMessageItems] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
     // jwt token
@@ -28,8 +30,11 @@ export function ChatRecipientList({
     // fetch Messages
     (async () => {
       const response = await fetchMessages(jwtToken);
-      if (response.status === "success") {
-        const items = response.data.map((message: any) => {
+
+      console.log(response);
+      
+      if (response.status === "success" ) {
+        let items = response.data.map((message: any) => {
           // time conversion to hours, days, weeks
           const currentTime = new Date().getTime();
           const lastMessageTime = new Date(
@@ -49,20 +54,29 @@ export function ChatRecipientList({
           }
 
           return {
-            id: message.user.id,
-            name: message.user.name,
+            id: message.recipient.id,
+            name: message.recipient.name,
             profile_image: {
-              url: message.user.picture.url,
-              width: message.user.picture.width,
-              height: message.user.picture.height,
+              url: message.recipient.profileImage,
             },
             message: message.lastMessage.message,
             time: message.lastMessage.createdTime,
+            createdTime: lastMessageTime,
           };
+        });
+        // sort recipients by last message time
+        items = items.sort((a: any, b: any) => {
+          return (
+            new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime()
+          );
         });
 
         setMessageItems(items);
         callback(false);
+
+        if (items.length > 0) {
+          setLoading(false);
+        }
       }
     })();
   }, [page, newMessage]);
@@ -77,8 +91,25 @@ export function ChatRecipientList({
           <CardTitle>Recipients</CardTitle>
         </CardHeader>
         <Separator />
+        {
+          (messageItems.length < 1) ? (
+            <CardContent className="px-2 h-[69vh] scroll-auto overflow-y-auto w-full">
+              <div className="flex flex-col items-center justify-center h-full">
+                <p className="text-lg text-gray-500">No messages yet.</p>
+              </div>
+            </CardContent>) : (
+              (loading) && (
+                <CardContent className="px-2 h-[69vh] scroll-auto overflow-y-auto w-full">
+                  <div className="relative flex flex-col items-center justify-center h-full">
+                      <Spinner loading />
+                  </div>
+                </CardContent>
+              )
+            ) 
+        }
+        
         {pageConnected && messageItems ? (
-          <CardContent className="px-2 h-[69vh] scroll-auto overflow-y-auto w-full">
+          <CardContent className={`${loading ? 'hidden': ''} px-2 h-[69vh] scroll-auto overflow-y-auto w-full`}>
             {messageItems.map((item, index) => (
               <div key={index} className="w-full">
                 <Button
@@ -87,11 +118,9 @@ export function ChatRecipientList({
                 >
                   <div className="size-10 rounded-full content-center">
                     <img
-                        className="rounded-full w-fit"
+                      className="rounded-full w-fit"
                       src={item.profile_image.url}
                       alt={item.name}
-                      height={item.profile_image.height}
-                      width={item.profile_image.width}
                     />
                   </div>
                   <div className="pl-2 py-3 grow text-left">
@@ -99,7 +128,7 @@ export function ChatRecipientList({
                     <p className="text-xs text-gray-500">{`${item.message.slice(
                       0,
                       20
-                    )}...`}</p>
+                    )}`}</p>
                   </div>
                   <div className="text-gray-700 text-xs text-right">
                     {item.time}

@@ -77,7 +77,7 @@ function Dashboard() {
           {
             // If a page is connected, show page name instead of the button
             (pageConnected) ? (
-              <p className="p-3 rounded-md bg-purple-900 text-white">{page.name || 'Page name'}</p>
+              <p className="p-3 rounded-md bg-purple-900 text-white"><strong>Page: </strong>{page.name || 'Page name'}</p>
             ) : (
             <PageSubscribeDialog
               pageConnected={pageConnected}
@@ -110,6 +110,7 @@ function Dashboard() {
               // If a page is connected, show the chat box
               recipient && (
                 <ChatArea
+                  newMessage={notifyNewMessage}
                   // page={page}
                   recipient={recipient}
                 />
