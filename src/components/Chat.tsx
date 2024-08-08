@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Chat({
     children, isSender, time, sender, profileImage
 }: {
@@ -12,9 +14,9 @@ export default function Chat({
       <span className="size-8 rounded-full  text-center">
         {
           profileImage && !isSender ? (
-            <img
+            <Image
               src={profileImage}
-              alt={sender}
+              alt={sender || "Profile Image"}
               className="rounded-full w-fit"
             />
           ) : (

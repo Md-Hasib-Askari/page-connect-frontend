@@ -27,7 +27,7 @@ export default function Home() {
         }
       });
     }
-  }, []);
+  }, [router]);
 
   return (
     <main className="w-full h-screen flex">
@@ -38,11 +38,11 @@ export default function Home() {
         <Card className="border-none w-[400px] bg-transparent text-white justify-center mx-auto">
           <CardHeader>
             <CardTitle className="text-center text-3xl">
-              Let's get{" "}
+              Let&apos;s get{" "}
               <span className="text-blue-300 font-black">Started</span>
             </CardTitle>
             <CardDescription className="text-blue-100 text-center">
-              Let's connect Facebook pages organized
+              Let&apos;s connect Facebook pages organized
             </CardDescription>
           </CardHeader>
           <CardContent className="justify-center">

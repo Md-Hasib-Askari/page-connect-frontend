@@ -11,7 +11,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from "next/navigation";
 import { FaUser } from "react-icons/fa6";
 
-export default ({username}: {username: string}) => {
+export const Dropdown = ({username}: {username: string}) => {
     const router = useRouter();
 
     const logout = () => {

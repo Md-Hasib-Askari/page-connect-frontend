@@ -14,6 +14,7 @@ import {
 } from "./ui/card";
 import { socket } from "@/lib/socket";
 import { fetchMessages } from "@/api/fetchAPI";
+import Image from "next/image";
 
 export const ChatArea = ({ 
   recipient, newMessage
@@ -82,7 +83,7 @@ export const ChatArea = ({
         <CardTitle className="flex gap-3 align-middle">
           {!loading && (
             <>
-              <img
+              <Image
                 src={profileImage}
                 alt={conversation.recipient.name}
                 className="size-8 rounded-full mr-2"

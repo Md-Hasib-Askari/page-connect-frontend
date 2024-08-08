@@ -6,6 +6,7 @@ import { Separator } from "./ui/separator";
 import { useEffect } from "react";
 import { fetchMessages } from "@/api/fetchAPI";
 import Spinner from "./ui/spinner";
+import Image from "next/image";
 
 export function ChatRecipientList({
   pageConnected,
@@ -79,7 +80,7 @@ export function ChatRecipientList({
         }
       }
     })();
-  }, [page, newMessage]);
+  }, [page, newMessage, callback]);
 
   const handleRecipient = (id: string) => {
     setRecipient(id);
@@ -117,7 +118,7 @@ export function ChatRecipientList({
                   onClick={() => handleRecipient(item.id)}
                 >
                   <div className="size-10 rounded-full content-center">
-                    <img
+                    <Image
                       className="rounded-full w-fit"
                       src={item.profile_image.url}
                       alt={item.name}
