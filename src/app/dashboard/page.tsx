@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { ChatRecipientList } from "@/components/ChatRecipientList";
 import { PageSubscribeDialog } from "@/components/PageSubscribeDialog";
 import { Dropdown as DropdownMenu } from "@/components/DropdownMenu";
-import {PrivateRoute as withAuth} from "@/components/ProtectedRoute";
+import withAuth from "@/components/PrivateRoute";
 import { useEffect, useState } from "react";
 import { getPage, getUser } from "@/api/fetchAPI";
 
