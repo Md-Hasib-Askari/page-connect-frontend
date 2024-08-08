@@ -3,11 +3,16 @@ import { saveAccessToken } from "@/api/fetchAPI";
 
 export const fbInit = () => {
     (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
+        let js: HTMLScriptElement;
+		let fjs = d.getElementsByTagName(s)[0] as HTMLScriptElement;
         if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
+        js = d.createElement(s) as HTMLScriptElement; 
+		js.id = id;
         js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
+
+		if (fjs && fjs.parentNode) {
+			fjs.parentNode.insertBefore(js, fjs);
+		}
     }(document, 'script', 'facebook-jssdk'));
 
     window.fbAsyncInit = function() {
@@ -43,7 +48,7 @@ export const FBLogin = async (): Promise<boolean> => {
 			} else {
 			  FB.login((response: any) => {
 				if (response.authResponse) {
-				  FB.api('/me', {fields: 'id, access_token'}, function(response) {
+				  FB.api('/me', {fields: 'id, access_token'}, function(response: any) {
 					resolve(true);
 				  });
 				} else { 
