@@ -17,13 +17,6 @@ export default function ChatBox({
     const items = messages;
     console.log(items);
     // time conversion to hours, days, weeks
-    items.forEach((message) => {
-      const lastMessageTime = new Date(message.createdTime).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      message.createdTime = lastMessageTime;
-    });
     
     setMessageItems(items);
 

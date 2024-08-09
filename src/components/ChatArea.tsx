@@ -87,6 +87,8 @@ export const ChatArea = ({
                 src={profileImage}
                 alt={conversation.recipient.name}
                 className="size-8 rounded-full mr-2"
+                height={20}
+                width={20}
               />
               <span className="content-center">{conversation.recipient.name}</span>
             </>
@@ -97,7 +99,7 @@ export const ChatArea = ({
       {loading ? (
         <CardContent>
           <div className="relative flex justify-center place-items-center">
-            <Spinner loading />
+            <Spinner loading={loading} />
           </div>
         </CardContent>
       ) : (

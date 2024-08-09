@@ -1,5 +1,6 @@
-// const API_URL = 'http://localhost:80/api/V1';
-const API_URL = 'https://page-connect-hwdbfkgkdygjeca7.eastus-01.azurewebsites.net/api/V1';
+import { BASE_URL } from "@/lib/constants";
+
+const API_URL = `${BASE_URL}/api/V1`;
 
 /**
  * Fetch User Information
@@ -26,13 +27,13 @@ export const getUser = async (jwtToken: string) => {
     return response.json();
 }
 
-export const saveAccessToken = async (userID: string, accessToken: string) => {
+export const saveAccessToken = async (userID: string, accessToken: string, expiresIn: string) => {
     const response = await fetch(`${API_URL}/saveAccessToken`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userID, accessToken})
+        body: JSON.stringify({ userID, accessToken, expiresIn})
     });
     return response.json();
 }

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { verifyUser } from '@/api/fetchAPI'; // Update the path to your actual auth utility
+import { TOKEN_KEY } from '@/lib/constants';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const jwtToken = Cookies.get('token');
+    const jwtToken = Cookies.get(TOKEN_KEY);
     if (jwtToken) {
       verifyUser(jwtToken)
         .then((data: any) => {

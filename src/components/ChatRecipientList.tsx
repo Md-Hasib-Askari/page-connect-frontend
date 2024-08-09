@@ -21,7 +21,7 @@ export function ChatRecipientList({
   callback: (arg: boolean) => void;
   setRecipient: (arg: string) => void;
 }) {
-  const [messageItems, setMessageItems] = React.useState<any[]>([]);
+  const [recipientItems, setRecipientItems] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
@@ -68,16 +68,13 @@ export function ChatRecipientList({
         // sort recipients by last message time
         items = items.sort((a: any, b: any) => {
           return (
-            new Date(a.createdTime).getTime() - new Date(b.createdTime).getTime()
+            new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime()
           );
         });
 
-        setMessageItems(items);
+        setRecipientItems(items);
         callback(false);
-
-        if (items.length > 0) {
-          setLoading(false);
-        }
+        setLoading(false); // loading
       }
     })();
   }, [page, newMessage, callback]);
@@ -93,35 +90,37 @@ export function ChatRecipientList({
         </CardHeader>
         <Separator />
         {
-          (messageItems.length < 1) ? (
+          (recipientItems.length < 1) ? (
             <CardContent className="px-2 h-[69vh] scroll-auto overflow-y-auto w-full">
               <div className="flex flex-col items-center justify-center h-full">
                 <p className="text-lg text-gray-500">No messages yet.</p>
               </div>
             </CardContent>) : (
-              (loading) && (
+              loading && (
                 <CardContent className="px-2 h-[69vh] scroll-auto overflow-y-auto w-full">
                   <div className="relative flex flex-col items-center justify-center h-full">
-                      <Spinner loading />
+                      <Spinner loading={loading} />
                   </div>
                 </CardContent>
               )
             ) 
         }
         
-        {pageConnected && messageItems ? (
+        {pageConnected && recipientItems ? (
           <CardContent className={`${loading ? 'hidden': ''} px-2 h-[69vh] scroll-auto overflow-y-auto w-full`}>
-            {messageItems.map((item, index) => (
+            {recipientItems.map((item, index) => (
               <div key={index} className="w-full">
                 <Button
                   className="px-2 w-full h-16 bg-transparent flex flex-row justify-between items-center"
                   onClick={() => handleRecipient(item.id)}
                 >
-                  <div className="size-10 rounded-full content-center">
+                  <div className="size-8 rounded-full content-center">
                     <Image
-                      className="rounded-full w-fit"
+                      className="rounded-full size-full"
                       src={item.profile_image.url}
                       alt={item.name}
+                      width={25}
+                      height={25}
                     />
                   </div>
                   <div className="pl-2 py-3 grow text-left">

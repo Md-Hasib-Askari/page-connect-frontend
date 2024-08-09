@@ -5,7 +5,7 @@ export default function Chat({
 }: {
     children: string,
     isSender?: boolean,
-    time?: string,
+    time?: Date,
     sender?: string,
     profileImage?: string
 }) {
@@ -17,7 +17,9 @@ export default function Chat({
             <Image
               src={profileImage}
               alt={sender || "Profile Image"}
-              className="rounded-full w-fit"
+              className="rounded-full size-full"
+              height={25}
+              width={25}
             />
           ) : (
             <span className="size-full inline-block rounded-full text-white place-content-center bg-black">
@@ -30,7 +32,7 @@ export default function Chat({
         <p className={`text-sm mb-1`}>
           {children}
         </p>
-        <p className={`text-[0.7rem] ${isSender?'text-right':''}`}>{time}</p>
+          <p className={`text-[0.7rem] ${isSender?'text-right':''}`}>{new Date(time).toLocaleTimeString('en-US', {timeStyle: "short"})}</p>
       </div>
     </div>
   );

@@ -10,6 +10,8 @@ import { getPage, getUser } from "@/api/fetchAPI";
 
 import { socket } from "@/lib/socket";
 import { ChatArea } from "@/components/ChatArea";
+import { isEmpty } from "@/lib/utils";
+import { TOKEN_KEY } from "@/lib/constants";
 
 function Dashboard() {
   const [pageConnected, setPageConnected] = useState<boolean>(false);
@@ -23,36 +25,44 @@ function Dashboard() {
     name: '',
     accessToken: ''
   });
-  const [username, setUsername] = useState<string>('username');
+  const [username, setUsername] = useState<string>('user');
   const [recipient, setRecipient] = useState<string>('');
 
   useEffect(() => {
-    const jwtToken = Cookies.get('token') as string;
+    // Get the JWT token from the cookie
+    const jwtToken = Cookies.get(TOKEN_KEY) as string;
 
     // Fetch the page name and user info from the database
     (async () => {
       const user = await getUser(jwtToken);
-      const response = await getPage(jwtToken);
+      const page = await getPage(jwtToken);
 
+      // If the user is connected, set the username state
       if (user.status == 'success') {
         setUsername(user.data)
       }
-      if (response.status === 'success') {
-        setPage(response.data);
-        setPageConnected(true);
+
+      // If the page is connected, set the page state
+      if (page.status === 'success') {
+        setPage(page.data);
+        if (!isEmpty(page.data)) {
+          setPageConnected(true);
+        }
       }
     })();
 
   }, []);
 
   useEffect(() => {
+    if (!pageConnected) return;
+
+    console.log('Connecting to the server');
+    
     // Connect to the socket
-    socket.auth = { token: Cookies.get('token') };
+    socket.auth = { token: Cookies.get(TOKEN_KEY) };
     socket.connect();
     socket.on('connect', () => {
       console.log('Connected to the server');
-      // console.log(socket);
-      
       
       socket.on('private_message', (data) => {
         console.log('Message received: ', data);
@@ -64,7 +74,7 @@ function Dashboard() {
       // Disconnect from the socket
       socket.disconnect();
     }
-  }, []);
+  }, [pageConnected]);
 
   return (
     <div className="flex flex-col items-center h-screen">
@@ -82,6 +92,7 @@ function Dashboard() {
             <PageSubscribeDialog
               pageConnected={pageConnected}
               setPageConnected={setPageConnected}
+              setNotifyNewMessage={setNotifyNewMessage}
             />
             )
           }
@@ -104,6 +115,7 @@ function Dashboard() {
                 <PageSubscribeDialog
                   pageConnected={pageConnected}
                   setPageConnected={setPageConnected}
+                  setNotifyNewMessage={setNotifyNewMessage}
                 />
               </div>
             ) : (

@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
+import { WS_URL } from "./constants";
 
-const URL = 'ws://localhost:80';
+const URL = WS_URL;
 
 export const socket = io(URL);

@@ -1,18 +1,18 @@
 import Cookies from 'js-cookie';
 import { saveAccessToken } from "@/api/fetchAPI";
+import { TOKEN_KEY } from './constants';
 
 export const fbInit = () => {
+	/* eslint-disable */
+	// @ts-ignore
     (function(d, s, id){
-        let js: HTMLScriptElement;
-		let fjs = d.getElementsByTagName(s)[0] as HTMLScriptElement;
+        var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) {return;}
-        js = d.createElement(s) as HTMLScriptElement; 
-		js.id = id;
+        js = d.createElement(s); js.id = id;
+		// @ts-ignore
         js.src = "https://connect.facebook.net/en_US/sdk.js";
-
-		if (fjs && fjs.parentNode) {
-			fjs.parentNode.insertBefore(js, fjs);
-		}
+		// @ts-ignore
+		fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
     window.fbAsyncInit = function() {
@@ -25,19 +25,26 @@ export const fbInit = () => {
         });
         FB.AppEvents.logPageView();   
     };
+	/* eslint-enable */
+
     console.log('FB SDK initialized');
 }
 
 export const FBLogin = async (): Promise<boolean> => {
+	
 	// Return a promise to handle the async operation
+	/* eslint-disable */
+		
 	return new Promise((resolve) => {
+
 		FB.getLoginStatus(async (response: any) => {
-			if (response.status === 'connected') {
+			console.log(response);
+			if (response.status === 'connected' && response.authResponse.expiresIn > 0) {
 			  // If you are logged in, automatically get your userID and access token, your public profile information -->
-			  const {userID, accessToken} = response.authResponse;
-			  const res = await saveAccessToken(userID, accessToken); // Save the access token to the database
+			  const {userID, accessToken, expiresIn} = response.authResponse;
+			  const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
 			  if (res.status === 'success') {
-				Cookies.set('token', res.jwtToken, {
+				Cookies.set(TOKEN_KEY, res.jwtToken, {
 				  expires: 7,
 				  sameSite: 'None',
 				  secure: true,
@@ -48,20 +55,28 @@ export const FBLogin = async (): Promise<boolean> => {
 			} else {
 			  FB.login((response: any) => {
 				if (response.authResponse) {
-				  FB.api('/me', {fields: 'id, access_token'}, function(response: any) {
-					resolve(true);
-				  });
+				//   If you are logged in, automatically get your userID and access token, your public profile information -->
+				  const {userID, code} = response.authResponse;
+				  saveAccessToken(userID, code).then((res: any) => {
+						console.log(res);
+					  if (res.status === 'success') {
+						Cookies.set(TOKEN_KEY, res.jwtToken, {
+						  expires: 7,
+						  sameSite: 'None',
+						  secure: true,
+						  httpOnly: false,
+						}); // Create a cookie with the JWT token
+						resolve(true);
+					  } else { resolve(false); }
+				  }); // Save the access token to the database
 				} else { 
 				  // If you are not logged in, the login dialog will open for you to login asking for permission to get your public profile and email
 				  console.log('User cancelled login or did not fully authorize.'); 
 				  resolve(false);
 				}
-			  }, {
-				config_id: '1422753738417658',
-				response_type: 'code',
-				override_default_response_type: true
-			  });
+			  }, {});
 			}
 		});
-	})
+		/* eslint-enable */
+	});
 }

@@ -18,16 +18,18 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    // Check if user is already logged in
     const jwtToken = Cookies.get("token");
+    
     if (jwtToken) {
       verifyUser(jwtToken).then((data) => {
         if (data.status === "success") {
           console.log("User is verified");
-          router.push("/dashboard");
+          router.replace("/dashboard");
         }
       });
     }
-  }, [router]);
+  }, []);
 
   return (
     <main className="w-full h-screen flex">
