@@ -88,7 +88,9 @@ export const FBLogin = async (): Promise<any> => {
 				  console.log('User cancelled login or did not fully authorize.'); 
 				  resolve(false);
 				}
-			  }, {});
+			  }, {
+				config_id: '1422753738417658'
+			  });
 			}
 		});
 		/* eslint-enable */
