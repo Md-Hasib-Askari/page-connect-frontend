@@ -69,14 +69,14 @@ export const FBLogin = async (): Promise<any> => {
 					
 				  const {userID, accessToken, expiresIn} = response.authResponse;
 				  saveAccessToken(userID, accessToken, expiresIn).then((res: any) => {
-					// const expireCookie = Date.now() + expiresIn*1000;
+					const expireCookie = Date.now() + expiresIn*1000;
 						
 					  if (res.status === 'success') {
 						Cookies.set(TOKEN_KEY, res.jwtToken, {
-						  expires: 7,
+						  expires: expireCookie,
 						  sameSite: 'None',
 						  secure: true,
-						  httpOnly: false,
+						  httpOnly: true,
 						}); // Create a cookie with the JWT token
 						console.log(Cookies.get(TOKEN_KEY));
 						
