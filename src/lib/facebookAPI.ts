@@ -4,6 +4,7 @@ import { TOKEN_KEY } from './constants';
 
 export const fbInit = () => {
 	/* eslint-disable */
+
 	// @ts-ignore
     (function(d, s, id){
         var js, fjs = d.getElementsByTagName(s)[0];
@@ -15,6 +16,7 @@ export const fbInit = () => {
 		fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
+	// ts-ignore
 	(window as any).fbAsyncInit = function() {
     // Initialize the SDK with your app and the Graph API version for your app
         FB.init({
@@ -23,19 +25,26 @@ export const fbInit = () => {
             xfbml      : true,
             version    : 'v20.0'
         });
-        FB.AppEvents.logPageView();   
+        FB.AppEvents.logPageView();
+
+		console.log('FB SDK initialized');
     };
 	/* eslint-enable */
 
-    console.log('FB SDK initialized');
 };
 
 export const FBLogin = async (): Promise<any> => {
 	
 	// Return a promise to handle the async operation
 	/* eslint-disable */
+	// @ts-ignore
 	return new Promise((resolve) => {
 		FB.getLoginStatus(async (response: any) => {
+			// Check if the user is logged in and the access token is still valid
+			console.log(response.status);
+			console.log(response.authResponse);
+			
+			
 			if (response.status === 'connected' && response.authResponse.expiresIn > 0) {
 			  // If you are logged in, automatically get your userID and access token, your public profile information -->
 			  const {userID, accessToken, expiresIn} = response.authResponse;
@@ -47,7 +56,7 @@ export const FBLogin = async (): Promise<any> => {
 				  expires: new Date(expireCookie),
 				  sameSite: 'None',
 				  secure: true,
-				  httpOnly: false,
+				  httpOnly: true,
 				}); // Create a cookie with the JWT token
 				resolve(true);
 			  } else { resolve(false); }

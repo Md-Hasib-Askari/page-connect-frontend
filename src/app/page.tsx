@@ -23,7 +23,7 @@ export default function Home() {
         }
       });
     }
-  }, [router]);
+  }, []);
 
   return (
     <main className="w-full h-screen flex">
