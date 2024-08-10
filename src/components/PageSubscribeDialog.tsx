@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,22 +7,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 import { getPages, savePage } from '@/api/fetchAPI';
 import { useState } from 'react';
 import { TOKEN_KEY } from '@/lib/constants';
 import { Spinner } from './ui/spinner';
 import { useToast } from './ui/use-toast';
 
-export function PageSubscribeDialog({
-  pageConnected,
+export const PageSubscribeDialog = ({
   setPageConnected,
-  setNotifyNewMessage
+  setNotifyNewMessage,
 }: {
-  pageConnected: boolean,
+  // eslint-disable-next-line no-unused-vars
   setPageConnected: (value: boolean) => void,
+  // eslint-disable-next-line no-unused-vars
   setNotifyNewMessage: (value: boolean) => void
-}) {
+}) => {
   const [pageList, setPageList] = useState([]);
   const [jwtToken, setJwtToken] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -40,29 +40,30 @@ export function PageSubscribeDialog({
     setLoading(true); // Set the loading state to true
 
     // Get the JWT token from the cookie
-    const jwtToken = Cookies.get(TOKEN_KEY) as string;
+    const jwtToken = (Cookies as any).get(TOKEN_KEY) as string;
     setJwtToken(jwtToken);
     
     const response = await getPages(jwtToken);
     console.log(response);
     
-    if (response.status === 'success') {
+    
+    if (response.status === 'success' && response.data) {
       setPageList(response.data);
     } else {
       toast({
         title: 'Error!',
         description: 'Error while fetching pages.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     }
     setLoading(false); // Set the loading state to false
-  }
+  };
 
   // Handle the page connect button click
   const handlePageConnect = async ({
     id,
     name,
-    access_token
+    access_token,
   }: {
     id: string;
     name: string;
@@ -84,24 +85,27 @@ export function PageSubscribeDialog({
       toast({
         title: 'Page connected',
         description: 'Page connected successfully',
-        className: "bg-green-600 text-green-100 ring-green-200"
+        className: 'bg-green-600 text-green-100 ring-green-200',
       });
     } else {
       toast({
         title: 'Error!',
-        description: "The page couldn't be saved.",
-        variant: 'destructive'
+        description: 'The page couldn\'t be saved.',
+        variant: 'destructive',
       });
       setLoading(false); // Set the loading state to false
     }
 
-  }
+  };
   return (
-    <Dialog onOpenChange={setIsDialogOpen} open={isDialogOpen}>
+    <Dialog 
+      onOpenChange={setIsDialogOpen} 
+      open={isDialogOpen}
+      >
       <DialogTrigger asChild>
         <Button onClick={getPagesList}>Connect a Facebook Page</Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
+      <DialogContent className='sm:max-w-[425px] shadow-md'>
         <DialogHeader>
           <DialogTitle>Connect a page</DialogTitle>
           <DialogDescription>
@@ -123,5 +127,5 @@ export function PageSubscribeDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

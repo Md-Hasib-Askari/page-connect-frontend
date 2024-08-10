@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { verifyUser } from '@/api/fetchAPI';
@@ -7,14 +7,24 @@ import { useToast } from './ui/use-toast';
 import { TOKEN_KEY } from '@/lib/constants';
 
 const PrivateRoute = (Component: React.FC): React.FC => {
+  /* eslint-disable react/display-name */
   return (props) => {
-    const [loading, setLoading] = React.useState(true);
-    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [loading, setLoading] = useState<boolean>(true);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const router = useRouter();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { toast } = useToast();
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-      const jwtToken = Cookies.get(TOKEN_KEY) as string; // Get token from cookie
+      const jwtToken = (Cookies as any).get(TOKEN_KEY) as string; // Get token from cookie
+      if (!jwtToken) {
+        router.replace('/');
+        return;
+      }
       
       (async () => {
         // Verify the user with the token
@@ -22,9 +32,18 @@ const PrivateRoute = (Component: React.FC): React.FC => {
 
         if (response.status === 'success') {
           setIsAuthenticated(true);
+          setLoading(false);
+        } else {
+          toast({
+            title: 'Unauthorized',
+            description: 'You are not authorized to view this page',
+            variant: 'destructive',
+          });
+          router.replace('/'); // Redirect to home if not authenticated
+          return null;
         }
-        setLoading(false);
       })();
+      // eslint-disable-next-line
     }, []);
 
     if (loading) {

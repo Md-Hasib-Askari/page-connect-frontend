@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { saveAccessToken } from "@/api/fetchAPI";
+import { saveAccessToken } from '@/api/fetchAPI';
 import { TOKEN_KEY } from './constants';
 
 export const fbInit = () => {
@@ -15,7 +15,7 @@ export const fbInit = () => {
 		fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
-    window.fbAsyncInit = function() {
+	(window as any).fbAsyncInit = function() {
     // Initialize the SDK with your app and the Graph API version for your app
         FB.init({
             appId      : '1225207711991404',
@@ -28,24 +28,23 @@ export const fbInit = () => {
 	/* eslint-enable */
 
     console.log('FB SDK initialized');
-}
+};
 
-export const FBLogin = async (): Promise<boolean> => {
+export const FBLogin = async (): Promise<any> => {
 	
 	// Return a promise to handle the async operation
 	/* eslint-disable */
-		
 	return new Promise((resolve) => {
-
 		FB.getLoginStatus(async (response: any) => {
-			console.log(response);
 			if (response.status === 'connected' && response.authResponse.expiresIn > 0) {
 			  // If you are logged in, automatically get your userID and access token, your public profile information -->
 			  const {userID, accessToken, expiresIn} = response.authResponse;
+			  const expireCookie = Date.now() + expiresIn*1000-1000;
+
 			  const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
 			  if (res.status === 'success') {
 				Cookies.set(TOKEN_KEY, res.jwtToken, {
-				  expires: 7,
+				  expires: new Date(expireCookie),
 				  sameSite: 'None',
 				  secure: true,
 				  httpOnly: false,
@@ -54,14 +53,16 @@ export const FBLogin = async (): Promise<boolean> => {
 			  } else { resolve(false); }
 			} else {
 			  FB.login((response: any) => {
-				if (response.authResponse) {
+				// handle the response
+				if (response.authResponse.accessToken) {
 				//   If you are logged in, automatically get your userID and access token, your public profile information -->
-				  const {userID, code} = response.authResponse;
-				  saveAccessToken(userID, code).then((res: any) => {
-						console.log(res);
+				  const {userID, accessToken, expiresIn} = response.authResponse;
+				  saveAccessToken(userID, accessToken, expiresIn).then((res: any) => {
+					const expireCookie = Date.now() + expiresIn*1000;
+						
 					  if (res.status === 'success') {
 						Cookies.set(TOKEN_KEY, res.jwtToken, {
-						  expires: 7,
+						  expires: new Date(expireCookie),
 						  sameSite: 'None',
 						  secure: true,
 						  httpOnly: false,
@@ -79,4 +80,4 @@ export const FBLogin = async (): Promise<boolean> => {
 		});
 		/* eslint-enable */
 	});
-}
+};

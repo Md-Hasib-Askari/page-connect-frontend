@@ -1,12 +1,14 @@
-import * as React from "react";
-import Cookies from "js-cookie";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "./ui/separator";
-import { useEffect } from "react";
-import { fetchMessages } from "@/api/fetchAPI";
-import { Spinner } from "./ui/spinner";
-import Image from "next/image";
+import * as React from 'react';
+import Cookies from 'js-cookie';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from './ui/separator';
+import { useEffect } from 'react';
+import { fetchMessages } from '@/api/fetchAPI';
+import { Spinner } from './ui/spinner';
+import Image from 'next/image';
+import { TOKEN_KEY } from '@/lib/constants';
+import {IChatRecipientListProps} from '@/types/components';
 
 export function ChatRecipientList({
   pageConnected,
@@ -18,7 +20,9 @@ export function ChatRecipientList({
   pageConnected?: boolean;
   page: any;
   newMessage: boolean;
+  // eslint-disable-next-line no-unused-vars
   callback: (arg: boolean) => void;
+  // eslint-disable-next-line no-unused-vars
   setRecipient: (arg: string) => void;
 }) {
   const [recipientItems, setRecipientItems] = React.useState<any[]>([]);
@@ -26,16 +30,14 @@ export function ChatRecipientList({
 
   useEffect(() => {
     // jwt token
-    const jwtToken = Cookies.get("token") as string;
+    const jwtToken = (Cookies as any).get(TOKEN_KEY) as string;
 
     // fetch Messages
     (async () => {
       const response = await fetchMessages(jwtToken);
 
-      console.log(response);
-      
-      if (response.status === "success" ) {
-        let items = response.data.map((message: any) => {
+      if (response.status === 'success' ) {
+        let items = response.data.map((message: IChatRecipientListProps) => {
           // time conversion to hours, days, weeks
           const currentTime = new Date().getTime();
           const lastMessageTime = new Date(
@@ -43,7 +45,7 @@ export function ChatRecipientList({
           ).getTime();
           const time = (currentTime - lastMessageTime) / (1000 * 3600);
           if (time * 60 < 1) {
-            message.lastMessage.createdTime = "now";
+            message.lastMessage.createdTime = 'now';
           } else if (time < 1) {
             message.lastMessage.createdTime = `${Math.floor(time * 60)}m`;
           } else if (time < 24) {
@@ -83,9 +85,9 @@ export function ChatRecipientList({
     setRecipient(id);
   };
   return (
-    <div className="w-full bg-white rounded-md">
-      <Card className="">
-        <CardHeader>
+    <div className="w-full h-[91%] bg-white rounded-md shadow-md">
+      <Card className="flex flex-col h-full">
+        <CardHeader className="py-3">
           <CardTitle>Recipients</CardTitle>
         </CardHeader>
         <Separator />
@@ -107,7 +109,10 @@ export function ChatRecipientList({
         }
         
         {pageConnected && recipientItems ? (
-          <CardContent className={`${loading ? 'hidden': ''} px-2 h-[69vh] scroll-auto overflow-y-auto w-full`}>
+          <CardContent 
+            className={`${loading ? 'hidden': ''} p-0 px-2 border-none shadow-none scroll-auto overflow-y-auto w-full`}
+            aria-orientation="vertical"
+            >
             {recipientItems.map((item, index) => (
               <div key={index} className="w-full">
                 <Button
@@ -125,10 +130,7 @@ export function ChatRecipientList({
                   </div>
                   <div className="pl-2 py-3 grow text-left">
                     <p className="text-sm font-bold text-black">{item.name}</p>
-                    <p className="text-xs text-gray-500">{`${item.message.slice(
-                      0,
-                      20
-                    )}`}</p>
+                    <p className="text-xs text-gray-500">{`${item.message.slice(0,20)}`}</p>
                   </div>
                   <div className="text-gray-700 text-xs text-right">
                     {item.time}

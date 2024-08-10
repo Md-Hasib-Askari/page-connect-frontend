@@ -1,10 +1,10 @@
-'use client'
-import { ReactElement, useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import { fbInit, FBLogin } from "@/lib/facebookAPI";
-import { FaFacebook } from "react-icons/fa6";
-import { useRouter } from "next/navigation";
-import { useToast } from "./ui/use-toast";
+'use client';
+import { ReactElement, useEffect, useState } from 'react';
+import { Button } from './ui/button';
+import { fbInit, FBLogin } from '@/lib/facebookAPI';
+import { FaFacebook } from 'react-icons/fa6';
+import { useRouter } from 'next/navigation';
+import { useToast } from './ui/use-toast';
 
 const FacebookConnectButton = ({ className = '' }: {className: string}): ReactElement => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,7 +25,7 @@ const FacebookConnectButton = ({ className = '' }: {className: string}): ReactEl
         toast({
           title: 'Error',
           description: 'Failed to login with Facebook',
-          variant: 'destructive'
+          variant: 'destructive',
         });
       }
     });

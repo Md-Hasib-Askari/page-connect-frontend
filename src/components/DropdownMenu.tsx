@@ -5,12 +5,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
+} from '@/components/ui/dropdown-menu';
+import { Button } from './ui/button';
 import Cookies from 'js-cookie';
-import { useRouter } from "next/navigation";
-import { FaUser } from "react-icons/fa6";
-import { TOKEN_KEY } from "@/lib/constants";
+import { useRouter } from 'next/navigation';
+import { FaUser } from 'react-icons/fa6';
+import { TOKEN_KEY } from '@/lib/constants';
 
 export const Dropdown = ({username}: {username: string}) => {
     const router = useRouter();
@@ -18,7 +18,7 @@ export const Dropdown = ({username}: {username: string}) => {
     const logout = () => {
         Cookies.remove(TOKEN_KEY);
         router.push('/');
-    }
+    };
 
   return (
     <DropdownMenu>

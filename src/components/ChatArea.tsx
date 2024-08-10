@@ -1,33 +1,36 @@
-import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
-import { Separator } from "./ui/separator";
-import { Input } from "./ui/input";
-import ChatBox from "./ChatBox";
-import { Button } from "./ui/button";
-import { Spinner } from "./ui/spinner";
+import Cookies from 'js-cookie';
+import React, { useEffect, useState } from 'react';
+import { Separator } from './ui/separator';
+import { Input } from './ui/input';
+import ChatBox from './ChatBox';
+import { Button } from './ui/button';
+import { Spinner } from './ui/spinner';
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "./ui/card";
-import { socket } from "@/lib/socket";
-import { fetchMessages } from "@/api/fetchAPI";
-import Image from "next/image";
+} from './ui/card';
+import { socket } from '@/lib/socket';
+import { fetchMessages } from '@/api/fetchAPI';
+import Image from 'next/image';
+import { TOKEN_KEY } from '@/lib/constants';
+import { useToast } from './ui/use-toast';
 
 export const ChatArea = ({ 
-  recipient, newMessage
+  recipient, newMessage,
  }: { 
   recipient: string, 
   newMessage: boolean
 }) => {
-  const [message, setMessage] = useState<string>(""); // message to be sent
+  const { toast } = useToast();
+  const [message, setMessage] = useState<string>(''); // message to be sent
   const [conversation, setConversation] = useState({
     recipient: {
-      id: "",
-      name: "",
-      profileImage: "",
+      id: '',
+      name: '',
+      profileImage: '',
     },
     messages: [],
   });
@@ -37,48 +40,53 @@ export const ChatArea = ({
 
   useEffect(() => {
     // jwt token
-    const jwtToken = Cookies.get("token") as string;
+    const jwtToken = (Cookies as any).get(TOKEN_KEY);
 
     // fetch Messages
     (async () => {
       const response = await fetchMessages(jwtToken);
-      if (response.status === "success") {
+      if (response.status === 'success') {
         const items = response.data.filter((message: any) => {
           if (message.recipient.id !== recipient) return;
           return message;
         });
-        console.log(items[0]);
-
+        
         setConversation(items[0]);
         setProfileImage(items[0].recipient.profileImage);
 
         setLoading(false);
+      } else {
+        toast({
+          title: 'Sorry!',
+          description: 'Something is wrong!',
+          variant: 'destructive',
+        });
       }
     })();
+    // eslint-disable-next-line
   }, [recipient, newMessage, loadMessages]);
 
   useEffect(() => {
     setLoading(true);
   }, [recipient]);
 
-  useEffect(() => {
-    console.log('newMessage ', conversation);
-    
-  }, [conversation]);
-
   const sendMessage = () => {
     
-    socket.emit("private_message", {
-      token: Cookies.get("token"),
+    socket.emit('private_message', {
+      token: (Cookies as any).get(TOKEN_KEY),
       message: message,
       recipient: recipient,
     });
-    setMessage("");
+    setMessage('');
     setLoadMessages(!loadMessages);
   };
 
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key === 'Enter') sendMessage();
+  };
+
   return (
-    <Card className="h-full flex flex-col justify-between">
+    <Card className="h-full flex flex-col justify-between shadow-md bg-gradient-to-r from-purple-100 to-purple-50">
       <CardHeader className="pb-0">
         <CardTitle className="flex gap-3 align-middle">
           {!loading && (
@@ -94,7 +102,7 @@ export const ChatArea = ({
             </>
           )}
         </CardTitle>
-        <Separator />
+        <Separator className="bg-gradient-to-r from-purple-200 bg-purple-100" />
       </CardHeader>
       {loading ? (
         <CardContent>
@@ -114,7 +122,8 @@ export const ChatArea = ({
       <CardFooter className="py-1 w-full flex flex-row justify-center">
         <div className="max-w-xl flex flex-row">
           <Input
-            className="border-purple-900 ring-0 focus-visible:ring-0 mr-2 w-[400px]"
+            onKeyDown={handleEnterPress}
+            className="border-purple-900 border-2 ring-0 focus-visible:ring-0 mr-2 md:w-[400px]"
             onChange={(e) => setMessage(e.target.value)}
             value={message}
           />

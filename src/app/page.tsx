@@ -1,35 +1,30 @@
-"use client";
+'use client';
 
-import Cookies from "js-cookie";
-import { verifyUser } from "@/api/fetchAPI";
-import FacebookConnectButton from "@/components/FacebookConnectButton";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
+import {verifyUser} from '@/api/fetchAPI';
+import FacebookConnectButton from '@/components/FacebookConnectButton';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
+import {TOKEN_KEY} from '@/lib/constants';
 
 export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
     // Check if user is already logged in
-    const jwtToken = Cookies.get("token");
-    
+    console.log(typeof TOKEN_KEY);
+    const jwtToken = (Cookies as any).get(TOKEN_KEY);
     if (jwtToken) {
       verifyUser(jwtToken).then((data) => {
-        if (data.status === "success") {
-          console.log("User is verified");
-          router.replace("/dashboard");
+        if (data.status === 'success') {
+          console.log('User is verified');
+          router.replace('/dashboard');
         }
       });
     }
-  }, []);
+  }, [router]);
 
   return (
     <main className="w-full h-screen flex">
@@ -40,7 +35,7 @@ export default function Home() {
         <Card className="border-none w-[400px] bg-transparent text-white justify-center mx-auto">
           <CardHeader>
             <CardTitle className="text-center text-3xl">
-              Let&apos;s get{" "}
+              Let&apos;s get{' '}
               <span className="text-blue-300 font-black">Started</span>
             </CardTitle>
             <CardDescription className="text-blue-100 text-center">
