@@ -76,6 +76,8 @@ export const FBLogin = async (): Promise<any> => {
 						  secure: true,
 						  httpOnly: false,
 						}); // Create a cookie with the JWT token
+						console.log(Cookies.get(TOKEN_KEY));
+						
 						resolve(true);
 					  } else { resolve(false); }
 				  }); // Save the access token to the database
