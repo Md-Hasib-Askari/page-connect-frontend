@@ -19,7 +19,7 @@ export const fbInit = () => {
 	// ts-ignore
 	(window as any).fbAsyncInit = function() {
     // Initialize the SDK with your app and the Graph API version for your app
-        FB.init({
+        (FB as any).init({
             appId      : '1225207711991404',
             cookie     : true,
             xfbml      : true,
