@@ -65,6 +65,8 @@ export const FBLogin = async (): Promise<any> => {
 				// handle the response
 				if (response.authResponse.accessToken) {
 				//   If you are logged in, automatically get your userID and access token, your public profile information -->
+					console.log(response.authResponse);
+					
 				  const {userID, accessToken, expiresIn} = response.authResponse;
 				  saveAccessToken(userID, accessToken, expiresIn).then((res: any) => {
 					const expireCookie = Date.now() + expiresIn*1000;
