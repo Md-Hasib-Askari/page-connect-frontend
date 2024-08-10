@@ -39,7 +39,7 @@ export const FBLogin = async (): Promise<any> => {
 	/* eslint-disable */
 	// @ts-ignore
 	return new Promise((resolve) => {
-		FB.getLoginStatus(async (response: any) => {
+		(FB as any).getLoginStatus(async (response: any) => {
 			// Check if the user is logged in and the access token is still valid
 			console.log(response.status);
 			console.log(response.authResponse);
@@ -61,7 +61,7 @@ export const FBLogin = async (): Promise<any> => {
 				resolve(true);
 			  } else { resolve(false); }
 			} else {
-			  FB.login((response: any) => {
+			  (FB as any).login((response: any) => {
 				// handle the response
 				if (response.authResponse.accessToken) {
 				//   If you are logged in, automatically get your userID and access token, your public profile information -->
