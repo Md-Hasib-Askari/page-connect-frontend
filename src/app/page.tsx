@@ -14,7 +14,6 @@ export default function Home() {
 
   useEffect(() => {
     // Check if user is already logged in
-    console.log(typeof TOKEN_KEY);
     const jwtToken = (Cookies as any).get(TOKEN_KEY);
     if (jwtToken) {
       verifyUser(jwtToken).then((data) => {

@@ -70,7 +70,6 @@ function Dashboard() {
       console.log('Connected to the server');
       
       socket.on('private_message', (data) => {
-        console.log('Message received: ', data);
         setNotifyNewMessage(true);
       });
     });

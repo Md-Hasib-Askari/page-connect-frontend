@@ -42,10 +42,7 @@ export const PageSubscribeDialog = ({
     // Get the JWT token from the cookie
     const jwtToken = (Cookies as any).get(TOKEN_KEY) as string;
     setJwtToken(jwtToken);
-    
     const response = await getPages(jwtToken);
-    console.log(response);
-    
     
     if (response.status === 'success' && response.data) {
       setPageList(response.data);

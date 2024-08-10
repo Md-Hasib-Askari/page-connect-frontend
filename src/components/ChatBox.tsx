@@ -22,7 +22,6 @@ export default function ChatBox({
       b = new Date(b.createdTime).getTime();
       return a-b;
     });
-    console.log(items);
 
     // group items by date
     const groupedItems: any[] = [];
