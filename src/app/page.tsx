@@ -5,7 +5,7 @@ import FacebookConnectButton from '@/components/FacebookConnectButton';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {TOKEN_KEY} from '@/lib/constants';
 import { fbInit, FBLogin } from '@/lib/facebookAPI';
 import { FaCircleInfo, FaInfo } from 'react-icons/fa6';
@@ -13,17 +13,21 @@ import { useToast } from '@/components/ui/use-toast';
 
 export default function Home() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fbInit().then((status) => {
+    const error = searchParams.get('error') as string | null;
+    fbInit(error).then((status) => {
       if (status) {
         router.replace('/dashboard');
+        return;
       } else {
         FBLogin().then((status) => {
           if (status) {
             router.replace('/dashboard');
+            return;
           } else {
             toast({
               title: 'Login Error!',

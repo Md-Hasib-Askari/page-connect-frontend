@@ -42,7 +42,8 @@ function Dashboard() {
       if (user.status == 'success') {
         setUsername(user.data);
       } else {
-        router.replace('/');
+        router.replace('/?error=unauthorized');
+        return;
       }
 
       // If the page is connected, set the page state

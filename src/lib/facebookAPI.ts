@@ -1,7 +1,7 @@
 import { saveAccessToken } from '@/api/fetchAPI';
 import { APP_ID, FB_CONFIG_ID, TOKEN_KEY } from './constants';
 
-export const fbInit = async () => {
+export const fbInit = async (error=null as null | string) => {
 	/* eslint-disable */
 
 	// @ts-ignore
@@ -30,7 +30,7 @@ export const fbInit = async () => {
     };
 	/* eslint-enable */
 	// check for facebook login session
-	if (sessionStorage.getItem(`fbssls_${APP_ID}`)) {
+	if (sessionStorage.getItem(`fbssls_${APP_ID}`) && !error) {
 		console.log('Facebook session found');
 		const fbSession = JSON.parse(sessionStorage.getItem(`fbssls_${APP_ID}`) as string);
 		const {userID, accessToken, expiresIn} = fbSession.authResponse;
