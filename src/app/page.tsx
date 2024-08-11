@@ -54,7 +54,6 @@ export default function Home() {
   }, []);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
       <main className="md:relative w-full h-[100dvh] flex flex-col md:flex-row">
         <p className="md:absolute bg-black text-white w-[100dvw] text-center text-3xl py-5">
           Welcome to <span className="font-black">Socialistic</span>
@@ -101,6 +100,5 @@ export default function Home() {
           All rights reserved &copy; 2024
         </p>
       </main>
-    </Suspense>
   );
 }
