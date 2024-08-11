@@ -1,6 +1,5 @@
 'use client';
 
-import Cookies from 'js-cookie';
 import { ChatRecipientList } from '@/components/ChatRecipientList';
 import { PageSubscribeDialog } from '@/components/PageSubscribeDialog';
 import { Dropdown as DropdownMenu } from '@/components/DropdownMenu';
@@ -16,7 +15,6 @@ import { useRouter } from 'next/navigation';
 
 function Dashboard() {
   const router = useRouter();
-  // const { toast } = useToast();
   const [pageConnected, setPageConnected] = useState<boolean>(false);
   const [notifyNewMessage, setNotifyNewMessage] = useState<boolean>(false);
   const [page, setPage] = useState<{
@@ -33,7 +31,7 @@ function Dashboard() {
 
   useEffect(() => {
     // Get the JWT token from the cookie
-    const jwtToken = (Cookies as any).get(TOKEN_KEY);
+    const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
 
     // Fetch the page name and user info from the database
     (async () => {
@@ -64,7 +62,8 @@ function Dashboard() {
     console.log('Connecting to the server');
     
     // Connect to the socket
-    socket.auth = { token: (Cookies as any).get(TOKEN_KEY) };
+    const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
+    socket.auth = { token: jwtToken };
     socket.connect();
     socket.on('connect', () => {
       console.log('Connected to the server');

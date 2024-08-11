@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 import { verifyUser } from '@/api/fetchAPI';
 import { Spinner } from './ui/spinner';
 import { useToast } from './ui/use-toast';
@@ -20,7 +19,7 @@ const PrivateRoute = (Component: React.FC): React.FC => {
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-      const jwtToken = (Cookies as any).get(TOKEN_KEY) as string; // Get token from cookie
+      const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string; // Get token from cookie
       if (!jwtToken) {
         router.replace('/');
         return;

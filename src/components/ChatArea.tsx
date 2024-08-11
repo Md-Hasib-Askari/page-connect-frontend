@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
 import { Separator } from './ui/separator';
 import { Input } from './ui/input';
@@ -40,7 +39,7 @@ export const ChatArea = ({
 
   useEffect(() => {
     // jwt token
-    const jwtToken = (Cookies as any).get(TOKEN_KEY);
+    const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
 
     // fetch Messages
     (async () => {
@@ -73,7 +72,7 @@ export const ChatArea = ({
   const sendMessage = () => {
     
     socket.emit('private_message', {
-      token: (Cookies as any).get(TOKEN_KEY),
+      token: sessionStorage.getItem(TOKEN_KEY),
       message: message,
       recipient: recipient,
     });

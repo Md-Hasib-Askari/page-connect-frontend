@@ -1,8 +1,20 @@
-import Cookies from 'js-cookie';
 import { saveAccessToken } from '@/api/fetchAPI';
-import { TOKEN_KEY } from './constants';
+import { APP_ID, FB_CONFIG_ID, TOKEN_KEY } from './constants';
 
-export const fbInit = () => {
+export const fbInit = async () => {
+	// check for facebook login session
+	if (sessionStorage.getItem('fbssls_1225207711991404')) {
+		console.log('Facebook session found');
+		const fbSession = JSON.parse(sessionStorage.getItem('fbssls_1225207711991404') as string);
+		const {userID, accessToken, expiresIn} = fbSession.authResponse;
+
+		const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
+		if (res.status === 'success') {
+			sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
+			return true;		
+		}
+	}
+
 	/* eslint-disable */
 
 	// @ts-ignore
@@ -20,7 +32,7 @@ export const fbInit = () => {
 	(window as any).fbAsyncInit = function() {
     // Initialize the SDK with your app and the Graph API version for your app
         (FB as any).init({
-            appId      : '1225207711991404',
+            appId      : APP_ID,
             cookie     : true,
             xfbml      : true,
             version    : 'v20.0'
@@ -30,6 +42,7 @@ export const fbInit = () => {
 		console.log('FB SDK initialized');
     };
 	/* eslint-enable */
+	return false;
 
 };
 
@@ -41,47 +54,31 @@ export const FBLogin = async (): Promise<any> => {
 	return new Promise((resolve) => {
 		(FB as any).getLoginStatus(async (response: any) => {
 			// Check if the user is logged in and the access token is still valid
-			console.log(response.status);
-			console.log(response.authResponse);
 			
-			
-			if (response.status === 'connected' && response.authResponse.expiresIn > 0) {
+			if (response.status === 'connected' && response.authResponse?.expiresIn > 0) {
 			  // If you are logged in, automatically get your userID and access token, your public profile information -->
 			  const {userID, accessToken, expiresIn} = response.authResponse;
 			  const expireCookie = Date.now() + expiresIn*1000-1000;
 
 			  const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
 			  if (res.status === 'success') {
-				Cookies.set(TOKEN_KEY, res.jwtToken, {
-				  expires: new Date(expireCookie),
-				  sameSite: 'None',
-				  secure: true,
-				  httpOnly: true,
-				}); // Create a cookie with the JWT token
+				sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
 				resolve(true);
 			  } else { resolve(false); }
 			} else {
 			  (FB as any).login((response: any) => {
 				// handle the response
-				if (response.authResponse.accessToken) {
-				//   If you are logged in, automatically get your userID and access token, your public profile information -->
+				if (response.authResponse?.accessToken) {
+					//   If you are logged in, automatically get your userID and access token, your public profile information -->
 					console.log(response.authResponse);
 					
-				  const {userID, accessToken, expiresIn} = response.authResponse;
-				  saveAccessToken(userID, accessToken, expiresIn).then((res: any) => {
-					const expireCookie = Date.now() + expiresIn*1000;
+					const {userID, accessToken, expiresIn} = response.authResponse;
+					saveAccessToken(userID, accessToken, expiresIn).then((res: any) => {
 						
-					  if (res.status === 'success') {
-						Cookies.set(TOKEN_KEY, res.jwtToken, {
-						  expires: expireCookie,
-						  sameSite: 'None',
-						  secure: true,
-						  httpOnly: false,
-						}); // Create a cookie with the JWT token
-						console.log(Cookies.get(TOKEN_KEY));
-						
+					if (res.status === 'success') {
+						sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
 						resolve(true);
-					  } else { resolve(false); }
+					} else { resolve(false); }
 				  }); // Save the access token to the database
 				} else { 
 				  // If you are not logged in, the login dialog will open for you to login asking for permission to get your public profile and email
@@ -89,7 +86,7 @@ export const FBLogin = async (): Promise<any> => {
 				  resolve(false);
 				}
 			  }, {
-				config_id: '1422753738417658'
+				config_id: FB_CONFIG_ID,
 			  });
 			}
 		});

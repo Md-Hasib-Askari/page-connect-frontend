@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Cookies from 'js-cookie';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from './ui/separator';
@@ -30,7 +29,7 @@ export function ChatRecipientList({
 
   useEffect(() => {
     // jwt token
-    const jwtToken = (Cookies as any).get(TOKEN_KEY) as string;
+    const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
 
     // fetch Messages
     (async () => {

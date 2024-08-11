@@ -27,6 +27,17 @@ export const saveAccessToken = async (userID: string, accessToken: string, expir
     return response.json();
 };
 
+export const logout = async (jwtToken: string) => {
+    const response = await fetch(`${API_URL}/logout`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`,
+        },
+    });
+    return response.json();
+};
+
 /**
  * Fetch Page Information
  */

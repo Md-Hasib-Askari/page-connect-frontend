@@ -1,20 +1,28 @@
 'use client';
 
-import Cookies from 'js-cookie';
 import {verifyUser} from '@/api/fetchAPI';
 import FacebookConnectButton from '@/components/FacebookConnectButton';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {TOKEN_KEY} from '@/lib/constants';
+import { fbInit } from '@/lib/facebookAPI';
+import { FaCircleInfo, FaInfo } from 'react-icons/fa6';
 
 export default function Home() {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    fbInit().then((status) => {
+      if (status) {
+        router.replace('/dashboard');
+      }
+    });
     // Check if user is already logged in
-    const jwtToken = (Cookies as any).get(TOKEN_KEY);
+    const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
+    
     if (jwtToken) {
       verifyUser(jwtToken).then((data) => {
         if (data.status === 'success') {
@@ -23,15 +31,16 @@ export default function Home() {
         }
       });
     }
+    setLoading(false);
   }, []);
 
   return (
-    <main className="w-full h-screen flex">
-      <p className="absolute bg-black text-white w-full text-center  text-3xl py-5">
+    <main className="md:relative w-full h-[100dvh] flex flex-col md:flex-row">
+      <p className="md:absolute bg-black text-white w-[100dvw] text-center text-3xl py-5">
         Welcome to <span className="font-black">Socialistic</span>
       </p>
       <div className="flex-1 bg-blue-700 content-center">
-        <Card className="border-none w-[400px] bg-transparent text-white justify-center mx-auto">
+        <Card className="border-none w-full bg-transparent text-white justify-center mx-auto">
           <CardHeader>
             <CardTitle className="text-center text-3xl">
               Let&apos;s get{' '}
@@ -43,13 +52,13 @@ export default function Home() {
           </CardHeader>
           <CardContent className="justify-center">
             <div className="w-full flex justify-center">
-              <FacebookConnectButton className="bg-white text-blue-800 mx-auto" />
+              <FacebookConnectButton loading={loading} className="bg-white text-blue-800 mx-auto" />
             </div>
           </CardContent>
         </Card>
       </div>
       <div className="flex-1 bg-purple-600 content-center px-5">
-        <Card className="border-none w-[400px] bg-transparent text-white mx-auto">
+        <Card className="border-none w-full bg-transparent text-white mx-auto">
           <CardHeader>
             <CardTitle className="text-center text-3xl">
               How it <span className="text-purple-400 font-black">Works?</span>
@@ -61,13 +70,14 @@ export default function Home() {
           <CardContent>
             <div className="flex justify-center">
               <Button className="bg-purple-100 text-purple-700">
-                Learn More
+                <FaCircleInfo size={20} className='mr-2' />
+                <span>Learn More</span>
               </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-      <p className="absolute bottom-0 text-xs py-3 text-gray-300 text-center w-full bg-black">
+      <p className="md:absolute bottom-0 text-xs py-3 text-gray-300 text-center w-full bg-black">
         All rights reserved &copy; 2024
       </p>
     </main>

@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -40,7 +39,7 @@ export const PageSubscribeDialog = ({
     setLoading(true); // Set the loading state to true
 
     // Get the JWT token from the cookie
-    const jwtToken = (Cookies as any).get(TOKEN_KEY) as string;
+    const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
     setJwtToken(jwtToken);
     const response = await getPages(jwtToken);
     
