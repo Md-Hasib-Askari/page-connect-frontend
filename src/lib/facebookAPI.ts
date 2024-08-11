@@ -34,11 +34,14 @@ export const fbInit = async (error=null as null | string) => {
 		console.log('Facebook session found');
 		const fbSession = JSON.parse(sessionStorage.getItem(`fbssls_${APP_ID}`) as string);
 		const {userID, accessToken, expiresIn} = fbSession.authResponse;
+		const expiresAt = fbSession.expiresAt as number;
 
-		const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
-		if (res.status === 'success') {
-			sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
-			return new Promise((resolve) => resolve(true));		
+		if (expiresAt > Date.now()) {
+			const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
+			if (res.status === 'success') {
+				sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
+				return new Promise((resolve) => resolve(true));
+			}
 		}
 	}
 	return new Promise((resolve) => resolve(false));
@@ -58,7 +61,7 @@ export const FBLogin = async (): Promise<any> => {
 			  // If you are logged in, automatically get your userID and access token, your public profile information -->
 			  const {userID, accessToken, expiresIn} = response.authResponse;
 			  const expireCookie = Date.now() + expiresIn*1000-1000;
-
+			  
 			  const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
 			  if (res.status === 'success') {
 				sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
@@ -69,8 +72,6 @@ export const FBLogin = async (): Promise<any> => {
 				// handle the response
 				if (response.authResponse?.accessToken) {
 					//   If you are logged in, automatically get your userID and access token, your public profile information -->
-					console.log(response.authResponse);
-					
 					const {userID, accessToken, expiresIn} = response.authResponse;
 					saveAccessToken(userID, accessToken, expiresIn).then((res: any) => {
 						
