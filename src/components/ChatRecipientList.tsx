@@ -91,7 +91,7 @@ export function ChatRecipientList({
         </CardHeader>
         <Separator />
         {
-          (recipientItems.length < 1) ? (
+          (recipientItems.length < 1) && pageConnected ? (
             <CardContent className="px-2 h-[69vh] scroll-auto overflow-y-auto w-full">
               <div className="flex flex-col items-center justify-center h-full">
                 <p className="text-lg text-gray-500">No messages yet.</p>
