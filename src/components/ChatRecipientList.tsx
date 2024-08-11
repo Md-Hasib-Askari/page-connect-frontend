@@ -119,13 +119,21 @@ export function ChatRecipientList({
                   onClick={() => handleRecipient(item.id)}
                 >
                   <div className="size-8 rounded-full content-center">
-                    <Image
-                      className="rounded-full size-full"
-                      src={item.profile_image.url}
-                      alt={item.name}
-                      width={25}
-                      height={25}
-                    />
+                    {
+                      item.profile_image.url ? (
+                        <Image
+                          className="rounded-full size-full"
+                          src={item.profile_image.url}
+                          alt={item.name}
+                          width={25}
+                          height={25}
+                        />
+                      ) : (
+                        <span className="inline-block size-full content-center rounded-full bg-purple-950">
+                          {item.name.charAt(0).toUpperCase()}
+                        </span>
+                      )
+                    }
                   </div>
                   <div className="pl-2 py-3 grow text-left">
                     <p className="text-sm font-bold text-black">{item.name}</p>

@@ -90,13 +90,21 @@ export const ChatArea = ({
         <CardTitle className="flex gap-3 align-middle">
           {!loading && (
             <>
-              <Image
-                src={profileImage}
-                alt={conversation.recipient.name}
-                className="size-8 rounded-full mr-2"
-                height={20}
-                width={20}
-              />
+            {
+              conversation.recipient.profileImage ? (
+                <Image
+                  src={profileImage}
+                  alt={conversation.recipient.name}
+                  className="size-8 rounded-full mr-2"
+                  height={20}
+                  width={20}
+                />
+              ) : (
+                <div className="size-8 rounded-full mr-2 bg-purple-900 text-white flex justify-center items-center">
+                  {conversation.recipient.name.charAt(0).toUpperCase()}
+                </div>
+              )
+            }
               <span className="content-center">{conversation.recipient.name}</span>
             </>
           )}
