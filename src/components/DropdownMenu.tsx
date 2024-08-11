@@ -17,9 +17,13 @@ export const Dropdown = ({username}: {username: string}) => {
 
     const handleLogout = async () => {
         const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string;
-        await logout(jwtToken)
         sessionStorage.clear();
         router.push('/');
+        try {
+          await logout(jwtToken)
+        } catch (error) {
+          console.error('Failed to logout');
+        }
     };
 
   return (
