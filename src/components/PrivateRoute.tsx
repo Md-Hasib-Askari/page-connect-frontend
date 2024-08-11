@@ -21,7 +21,7 @@ const PrivateRoute = (Component: React.FC): React.FC => {
     useEffect(() => {
       const jwtToken = sessionStorage.getItem(TOKEN_KEY) as string; // Get token from cookie
       if (!jwtToken) {
-        router.replace('/');
+        router.replace('/?error=unauthorized');
         return;
       }
       
