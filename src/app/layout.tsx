@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: 'Socialistic',
   description: 'An application that connects your Facebook pages to the world.',
 };
+export const dynamic = 'force-dynamic';
 
 export default function RootLayout({
   children,

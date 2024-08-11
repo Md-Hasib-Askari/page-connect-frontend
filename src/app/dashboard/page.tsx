@@ -13,8 +13,6 @@ import { isEmpty } from '@/lib/utils';
 import { TOKEN_KEY } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
-
 function Dashboard() {
   const router = useRouter();
   const [pageConnected, setPageConnected] = useState<boolean>(false);
