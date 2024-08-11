@@ -7,17 +7,32 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/compo
 import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {TOKEN_KEY} from '@/lib/constants';
-import { fbInit } from '@/lib/facebookAPI';
+import { fbInit, FBLogin } from '@/lib/facebookAPI';
 import { FaCircleInfo, FaInfo } from 'react-icons/fa6';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function Home() {
   const router = useRouter();
+  const { toast } = useToast();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     fbInit().then((status) => {
       if (status) {
         router.replace('/dashboard');
+      } else {
+        FBLogin().then((status) => {
+          if (status) {
+            router.replace('/dashboard');
+          } else {
+            toast({
+              title: 'Login Error!',
+              description: 'SORRY! Unable to login with Facebook',
+              variant: 'destructive',
+            });
+            setLoading(false);
+          }
+        });
       }
     });
     // Check if user is already logged in

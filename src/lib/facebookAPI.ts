@@ -2,19 +2,6 @@ import { saveAccessToken } from '@/api/fetchAPI';
 import { APP_ID, FB_CONFIG_ID, TOKEN_KEY } from './constants';
 
 export const fbInit = async () => {
-	// check for facebook login session
-	if (sessionStorage.getItem('fbssls_1225207711991404')) {
-		console.log('Facebook session found');
-		const fbSession = JSON.parse(sessionStorage.getItem('fbssls_1225207711991404') as string);
-		const {userID, accessToken, expiresIn} = fbSession.authResponse;
-
-		const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
-		if (res.status === 'success') {
-			sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
-			return true;		
-		}
-	}
-
 	/* eslint-disable */
 
 	// @ts-ignore
@@ -42,7 +29,19 @@ export const fbInit = async () => {
 		console.log('FB SDK initialized');
     };
 	/* eslint-enable */
-	return false;
+	// check for facebook login session
+	if (sessionStorage.getItem(`fbssls_${APP_ID}`)) {
+		console.log('Facebook session found');
+		const fbSession = JSON.parse(sessionStorage.getItem(`fbssls_${APP_ID}`) as string);
+		const {userID, accessToken, expiresIn} = fbSession.authResponse;
+
+		const res = await saveAccessToken(userID, accessToken, expiresIn); // Save the access token to the database
+		if (res.status === 'success') {
+			sessionStorage.setItem(TOKEN_KEY, res.jwtToken);
+			return new Promise((resolve) => resolve(true));		
+		}
+	}
+	return new Promise((resolve) => resolve(false));
 
 };
 
